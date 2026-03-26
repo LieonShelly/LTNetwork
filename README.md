@@ -193,14 +193,50 @@ let response = try await client.sendRequest(FetchProfileRequest())
 let profile: ProfileDTO = try response.parseJson()
 ```
 
+## SPM 集成
+
+### 通过 Xcode 添加
+
+1. 在 Xcode 中选择 **File → Add Package Dependencies...**
+2. 输入仓库地址：`https://github.com/LieonShelly/LTNetwork.git`
+3. 选择版本规则（如 **Branch: main**），点击 **Add Package**
+4. 在目标 target 中勾选 `LTNetwork`
+
+### 通过 Package.swift 添加
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/LieonShelly/LTNetwork.git", branch: "main"),
+],
+targets: [
+    .target(
+        name: "YourTarget",
+        dependencies: [
+            .product(name: "LTNetwork", package: "LTNetwork"),
+        ]
+    ),
+]
+```
+
+### 导入使用
+
+```swift
+import LTNetwork
+
+let client = ApiClient(
+    environment: .dev,
+    interceptors: [authInterceptor],
+    maxRetryCount: 2
+)
+let response = try await client.sendRequest(myRequest)
+```
+
+> **要求：** Swift 5.9+、iOS 17+。本库无第三方依赖。
+
 ## 测试
 
 测试位于 `core/Network/Tests/`，通过 Xcode 的 `LTNetworkTests` target 运行：
 
-```bash
-# 通过 XcodeGen 生成项目后在 Xcode 中运行
-bundle exec fastlane generate_project
-```
 
 测试覆盖：
 - 默认拦截器透传

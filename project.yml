@@ -1,0 +1,40 @@
+---
+include: 
+  - ../../fastlane/project/settings.yml
+
+name: Network
+
+settings:
+  groups:
+    - BaseProjectSetting
+
+targets:
+  LTNetwork:
+    type: framework
+    platform: iOS
+    sources:
+      - Source
+    settings:
+      groups:
+        - BaseTargetSetting
+  LTNetworkTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: LTNetwork
+      - framework: LTNetwork.framework
+        implicit: true
+    settings:
+      groups:
+        - BaseTargetSetting
+        - BaseTestTargetSetting
+
+
+shemes:
+  LTNetwork:
+    templates:
+      - DefaultSchemeTemplate
+    templateArributes:
+      testTargetName: LTNetwork

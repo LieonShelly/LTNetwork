@@ -1,6 +1,6 @@
 # LTNetwork
 
-LTNetwork 是 LittleThings iOS 应用的网络框架，基于 Swift Concurrency 构建，提供 HTTP 请求发送、Dio 风格拦截器链、可取消的请求生命周期管理和 SSE 流式请求支持。
+LTNetwork 是基于 Swift Concurrency 构建，提供 HTTP 请求发送、Dio 风格拦截器链、可取消的请求生命周期管理和 SSE 流式请求支持。
 
 ## 模块结构
 

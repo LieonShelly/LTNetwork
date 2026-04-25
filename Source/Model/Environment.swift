@@ -8,4 +8,5 @@ public enum AppEnvironment: Sendable {
     case dev
     case stagging
     case release
+    
 }

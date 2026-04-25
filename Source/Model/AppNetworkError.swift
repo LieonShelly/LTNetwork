@@ -17,6 +17,7 @@ public enum AppNetworkError: LocalizedError, Sendable {
     case localizedError(model: ErrorModel)
     case connectionError(type: NetworkConnectionError)
     case authorizationError(debugDescription: String)
+    case sslPinningFailed
     
     public var errorDescription: String? {
         return "errorDescription"

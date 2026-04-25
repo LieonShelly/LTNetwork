@@ -14,18 +14,29 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
     private let interceptors: [NetworkInterceptor]
     private let chain: InterceptorChain
     private let maxRetryCount: Int
+    private let sslPinningValidator: (any SSLPinningValidating)?
 
     public init(
         configuration: URLSessionConfiguration = .default,
         environment: AppEnvironment,
         interceptors: [NetworkInterceptor],
+        sslPinningValidator: (any SSLPinningValidating)? = nil,
         maxRetryCount: Int = 2
     ) {
-        self.session = URLSession(configuration: configuration)
+        let delegate = SessionDelegate(
+            validator: sslPinningValidator,
+            environment: environment
+        )
+        self.session = URLSession(
+            configuration: configuration,
+            delegate: delegate,
+            delegateQueue: nil
+        )
         self.environment = environment
         self.interceptors = interceptors
         self.chain = InterceptorChain(interceptors: interceptors)
         self.maxRetryCount = maxRetryCount
+        self.sslPinningValidator = sslPinningValidator
     }
 
     public func sendRequest(_ request: any Request) async throws -> Response {
@@ -53,8 +64,6 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
 
         while true {
             try Task.checkCancellation()
-
-            // 1. onRequest interceptor chain
             let requestResult = await chain.executeOnRequest(baseRequest)
             let urlRequest: URLRequest
             switch requestResult {
@@ -70,6 +79,12 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
                 responseData = try await session.data(for: urlRequest)
             } catch {
                 if error is CancellationError { throw error }
+                if let urlError = error as? URLError,
+                   urlError.code == .cancelled,
+                   let validator = sslPinningValidator,
+                   !validator.isDisabled {
+                    throw AppNetworkError.sslPinningFailed
+                }
                 throw AppNetworkError.networkError(
                     debugDescription: error.localizedDescription,
                     errorCode: (error as? URLError)?.code
@@ -82,7 +97,6 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
             let statusCode = httpResponse.statusCode
             print("[ApiClient]:\(request.endPoint.absoluteUrl(.dev)) - statusCode: \(statusCode)")
 
-            // 3. Handle response based on status code
             switch statusCode {
             case 200..<300:
                 let response = Response(statusCode: statusCode, data: responseData.0)
@@ -99,7 +113,6 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
                     statusCode: HttpErrorCode(rawValue: statusCode) ?? .badRequest,
                     body: responseData.0
                 )
-                // 4. onError interceptor chain
                 let errorResult = await chain.executeOnError(error, request: urlRequest)
                 switch errorResult {
                 case .next(let finalError):
@@ -168,6 +181,14 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
                 print("SSE: finish")
                 continuation.finish()
             } catch {
+                if let urlError = error as? URLError,
+                   urlError.code == .cancelled,
+                   let validator = self.sslPinningValidator,
+                   !validator.isDisabled {
+                    let sslError = AppNetworkError.sslPinningFailed
+                    continuation.finish(throwing: sslError)
+                    throw sslError
+                }
                 print("SSE ERROR: \(error)")
                 continuation.finish(throwing: error)
                 throw error
@@ -181,3 +202,4 @@ public class ApiClient: ApiClientType, @unchecked Sendable {
         return (stream: stream, task: networkTask)
     }
 }
+

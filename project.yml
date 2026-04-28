@@ -32,9 +32,9 @@ targets:
         - BaseTestTargetSetting
 
 
-shemes:
+schemes:
   LTNetwork:
     templates:
       - DefaultSchemeTemplate
-    templateArributes:
+    templateAttributes:
       testTargetName: LTNetwork

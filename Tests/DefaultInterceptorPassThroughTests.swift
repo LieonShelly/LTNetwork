@@ -1,25 +1,14 @@
 //
-//  LTApp, This code is protected by intellectual property rights.
+//  Created by lieon on 2026/05/17.
+//  This code is protected by intellectual property rights.
 //
 
 import XCTest
 @testable import LTNetwork
-// MARK: - Default Interceptor (no overrides)
 
-/// A struct that conforms to `NetworkInterceptor` without overriding any methods.
-/// All three lifecycle methods use the protocol's default implementation (pass-through).
 private struct DefaultInterceptor: NetworkInterceptor {}
 
-// MARK: - Property 5: 默认拦截器透传
 
-/// **Feature: network-apiclient-optimization, Property 5: 默认拦截器透传**
-/// **Validates: Requirements 3.5**
-///
-/// *For any* `NetworkInterceptor` that uses only default implementations (no overrides),
-/// requests, responses, and errors should pass through unchanged.
-///
-/// This test generates random `URLRequest`, `Response`, and `Error` values across 100+
-/// iterations and verifies that the default interceptor returns them unmodified.
 final class DefaultInterceptorPassThroughTests: XCTestCase {
 
     private let interceptor = DefaultInterceptor()

@@ -1,10 +1,10 @@
 //
-//  LTApp, This code is protected by intellectual property rights.
+//  Created by lieon on 2026/05/17.
+//  This code is protected by intellectual property rights.
 //
 
 import Foundation
 
-// MARK: - Request Phase
 
 public struct RequestInterceptorHandler: Sendable {
     public func next(_ request: URLRequest) -> RequestInterceptorResult { .next(request) }
@@ -16,7 +16,6 @@ public enum RequestInterceptorResult: @unchecked Sendable {
     case reject(Error)
 }
 
-// MARK: - Response Phase
 
 public struct ResponseInterceptorHandler: Sendable {
     public func next(_ response: Response) -> ResponseInterceptorResult { .next(response) }
@@ -28,7 +27,6 @@ public enum ResponseInterceptorResult: @unchecked Sendable {
     case reject(Error)
 }
 
-// MARK: - Error Phase
 
 public struct ErrorInterceptorHandler: Sendable {
     public func next(_ error: Error) -> ErrorInterceptorResult { .next(error) }

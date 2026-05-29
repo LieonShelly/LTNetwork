@@ -1,13 +1,12 @@
 //
-//  LTApp, This code is protected by intellectual property rights.
+//  Created by lieon on 2026/05/17.
+//  This code is protected by intellectual property rights.
 //
 
 import XCTest
 @testable import LTNetwork
 
-// MARK: - Test Interceptors
 
-/// Records the order it was called and optionally modifies the request by adding a header.
 private final class OrderTrackingInterceptor: NetworkInterceptor, @unchecked Sendable {
     let id: Int
     let orderLog: OrderLog
@@ -35,7 +34,6 @@ private final class OrderTrackingInterceptor: NetworkInterceptor, @unchecked Sen
     }
 }
 
-/// Thread-safe order log.
 private final class OrderLog: @unchecked Sendable {
     private var _entries: [Int] = []
     private let lock = NSLock()
@@ -59,7 +57,6 @@ private final class OrderLog: @unchecked Sendable {
     }
 }
 
-/// Rejects on onRequest.
 private struct RejectingInterceptor: NetworkInterceptor {
     let error: Error
     func onRequest(_ request: URLRequest, handler: RequestInterceptorHandler) async -> RequestInterceptorResult {
@@ -67,14 +64,12 @@ private struct RejectingInterceptor: NetworkInterceptor {
     }
 }
 
-/// Returns .retry on onError.
 private struct RetryInterceptor: NetworkInterceptor {
     func onError(_ error: Error, request: URLRequest, handler: ErrorInterceptorHandler) async -> ErrorInterceptorResult {
         handler.retry()
     }
 }
 
-/// Rejects on onResponse.
 private struct ResponseRejectingInterceptor: NetworkInterceptor {
     let error: Error
     func onResponse(_ response: Response, handler: ResponseInterceptorHandler) async -> ResponseInterceptorResult {
@@ -82,10 +77,7 @@ private struct ResponseRejectingInterceptor: NetworkInterceptor {
     }
 }
 
-// MARK: - Property 6: 拦截器按注册顺序执行
 
-/// **Feature: network-apiclient-optimization, Property 6: 拦截器按注册顺序执行**
-/// **Validates: Requirements 3.6**
 final class InterceptorChainTests: XCTestCase {
 
     private let dummyRequest = URLRequest(url: URL(string: "https://api.example.com/test")!)

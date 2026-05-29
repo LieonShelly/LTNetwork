@@ -1,13 +1,12 @@
 //
-//  LTApp, This code is protected by intellectual property rights.
+//  Created by lieon on 2026/05/17.
+//  This code is protected by intellectual property rights.
 //
 
 import XCTest
 @testable import LTNetwork
 
-// MARK: - Mock URLProtocol
 
-/// A custom URLProtocol that intercepts all requests and returns configurable responses.
 private final class MockURLProtocol: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
     /// Tracks how many times a request was actually sent to the network layer.
@@ -54,7 +53,6 @@ private final class MockURLProtocol: URLProtocol, @unchecked Sendable {
     override func stopLoading() {}
 }
 
-// MARK: - Mock Request
 
 private struct MockEndPoint: EndPoint {
     let path: String
@@ -70,7 +68,6 @@ private struct MockRequest: Request {
     var path: String = "test"
 }
 
-// MARK: - Test Interceptors
 
 private actor CallCountingInterceptor: NetworkInterceptor {
     private var _onRequestCount = 0
@@ -96,7 +93,6 @@ private struct RejectOnRequestInterceptor: NetworkInterceptor {
     }
 }
 
-// MARK: - Helper
 
 private func makeApiClient(
     interceptors: [NetworkInterceptor] = [],
@@ -125,10 +121,7 @@ private func mockHTTPResponse(statusCode: Int, data: Data = Data()) {
 }
 
 
-// MARK: - Property 2: sendRequest 与 NetworkTask.value 等价
 
-/// **Feature: network-apiclient-optimization, Property 2: sendRequest 与 NetworkTask.value 等价**
-/// **Validates: Requirements 1.4**
 final class ApiClientSendRequestEquivalenceTests: XCTestCase {
 
     override func setUp() {
@@ -172,10 +165,7 @@ final class ApiClientSendRequestEquivalenceTests: XCTestCase {
     }
 }
 
-// MARK: - Property 3: 重试次数受最大上限约束
 
-/// **Feature: network-apiclient-optimization, Property 3: 重试次数受最大上限约束**
-/// **Validates: Requirements 2.2, 2.4**
 final class ApiClientRetryLimitTests: XCTestCase {
 
     override func setUp() {
@@ -243,10 +233,7 @@ final class ApiClientRetryLimitTests: XCTestCase {
     }
 }
 
-// MARK: - Property 4: 重试时重新执行 onRequest 拦截器链
 
-/// **Feature: network-apiclient-optimization, Property 4: 重试时重新执行 onRequest 拦截器链**
-/// **Validates: Requirements 2.3, 2.6, 3.8**
 final class ApiClientRetryReExecutesOnRequestTests: XCTestCase {
 
     override func setUp() {
@@ -275,10 +262,7 @@ final class ApiClientRetryReExecutesOnRequestTests: XCTestCase {
 }
 
 
-// MARK: - Property 11: HTTP 状态码决定结果类型
 
-/// **Feature: network-apiclient-optimization, Property 11: HTTP 状态码决定结果类型**
-/// **Validates: Requirements 5.1, 5.2**
 final class ApiClientStatusCodeTests: XCTestCase {
 
     override func setUp() {
@@ -323,10 +307,7 @@ final class ApiClientStatusCodeTests: XCTestCase {
     }
 }
 
-// MARK: - Property 12: 网络连接失败映射为 networkError
 
-/// **Feature: network-apiclient-optimization, Property 12: 网络连接失败映射为 networkError**
-/// **Validates: Requirements 5.3**
 final class ApiClientNetworkErrorTests: XCTestCase {
 
     override func setUp() {
@@ -383,10 +364,7 @@ final class ApiClientNetworkErrorTests: XCTestCase {
     }
 }
 
-// MARK: - Property 13: onRequest 拒绝绕过重试
 
-/// **Feature: network-apiclient-optimization, Property 13: onRequest 拒绝绕过重试**
-/// **Validates: Requirements 5.5**
 final class ApiClientOnRequestRejectTests: XCTestCase {
 
     override func setUp() {
@@ -441,7 +419,6 @@ final class ApiClientOnRequestRejectTests: XCTestCase {
     }
 }
 
-/// Counts how many times onError is called.
 private actor CallCountingOnErrorInterceptor: NetworkInterceptor {
     private var _onErrorCount = 0
 

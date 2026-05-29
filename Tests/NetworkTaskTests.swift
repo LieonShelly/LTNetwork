@@ -1,14 +1,12 @@
 //
-//  LTApp, This code is protected by intellectual property rights.
+//  Created by lieon on 2026/05/17.
+//  This code is protected by intellectual property rights.
 //
 
 import XCTest
 @testable import LTNetwork
 
-// MARK: - Property 1: 取消操作产生 CancellationError
 
-/// **Feature: network-apiclient-optimization, Property 1: 取消操作产生 CancellationError**
-/// **Validates: Requirements 1.2, 1.3, 2.5, 5.4**
 final class NetworkTaskTests: XCTestCase {
 
     // MARK: - Cancel before completion throws CancellationError
